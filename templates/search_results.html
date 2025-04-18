@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Search Results</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Search Results</h1>
+
+    {% if recipes %}
+      <div class="row">
+        {% for recipe in recipes %}
+          <div class="col-md-4 mb-4">
+            <div class="card">
+              <img src="{{ recipe.image }}" class="card-img-top" alt="{{ recipe.title }}">
+              <div class="card-body">
+                <h5 class="card-title">{{ recipe.title }}</h5>
+                <a href="https://spoonacular.com/recipes/{{ recipe.title | replace(' ', '-') }}-{{ recipe.id }}"
+                   target="_blank" class="btn btn-primary w-100">
+                  View Recipe
+                </a>
+                {% if current_user.is_authenticated %}
+                  <a href="{{ url_for('save_favorite', recipe_id=recipe.id, recipe_title=recipe.title, image_url=recipe.image) }}"
+                     class="btn btn-success w-100 mt-2">
+                    Save to Favorites
+                  </a>
+                {% else %}
+                  <a href="{{ url_for('login') }}" class="btn btn-secondary w-100 mt-2">
+                    Login to Save
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center text-danger">No recipes found for your search.</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+      <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+  </div>
+    <footer>
+        <p> </p>
+    </footer>
+</body>
+</html>

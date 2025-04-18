@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/" style="color: red; font-family:Georgia"><b>Recipe Finder</b></a>
+            <div class="navbar-nav ms-auto">
+                {% if current_user.is_authenticated %}
+                    <span class="navbar-text me-2">Welcome, {{ current_user.username }}!</span>
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+
+                {% else %}
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Search for Any Recipe</h1>
+        <form action="/search" method="POST" onsubmit="return validateForm('query', 'error-message-query')">
+            <label for="query">Enter Recipe Name:</label>
+            <input type="text" id="query" name="query" class="form-control" required>
+            <span id="error-message-query" style="color: red; display: none;">Please enter a valid recipe name.</span>
+            <button type="submit" class="btn btn-success mt-3 w-100">Search Recipe</button>
+        </form>
+    </div>
+
+    <div class="container mt-5">
+        <h1 class="text-center mt-4">Enter Your Ingredients</h1>
+        <form action="/suggest" method="POST" onsubmit="return validateForm('ingredients', 'error-message-ingredients')">
+            <label for="ingredients">Ingredients (comma-separated):</label>
+            <input type="text" id="ingredients" name="ingredients" class="form-control" required>
+            <span id="error-message-ingredients" style="color: red; display: none;">Please enter valid ingredients.</span>
+            <button type="submit" class="btn btn-primary mt-3 w-100">Get Recipes</button>
+        </form>
+    </div>
+
+    <script>
+        function validateForm(inputId, errorMessageId) {
+            let input = document.getElementById(inputId).value.trim();
+            let errorMessage = document.getElementById(errorMessageId);
+            let regex = /^[a-zA-Z, ]+$/;
+            if (!regex.test(input) || input === "") {
+                errorMessage.style.display = "block";
+                return false;
+            }
+            errorMessage.style.display = "none";
+            return true;
+        }
+    </script>
+
+    <div class="container mt-5 text-center">
+        <a href="/favorites" class="btn btn-warning w-80">View Favorite Recipes</a>
+    </div>
+    <footer>
+        <p> </p>
+    </footer>
+</body>
+</html>
