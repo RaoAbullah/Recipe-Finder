@@ -2,10 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import requests
 
-from models import db, User, FavoriteRecipe  # Updated import
+from models import db, User, FavoriteRecipe
 
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(_file_))
 
 app = Flask("RecipeFinder")
 app.config['SECRET_KEY'] = '12345'
@@ -22,11 +22,6 @@ API_KEY = 'd010db4503814e108c4e9b93e3248b74'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-@app.route('/initdb')
-def initdb():
-    db.create_all()
-    return 'Database initialized!'
 
 @app.route('/')
 def index():
@@ -111,6 +106,13 @@ def remove_favorite(recipe_id):
         db.session.commit()
     return redirect(url_for('view_favorites'))
 
+# Temporary route to initialize database on Railway
+@app.route('/initdb')
+def initdb():
+    db.create_all()
+    return 'Database initialized! You can now delete this route.'
+
 if __name__ == '__main__':
     with app.app_context():
+        db.create_all()
     app.run(debug=True)
