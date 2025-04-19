@@ -106,6 +106,7 @@ def remove_favorite(recipe_id):
         db.session.commit()
     return redirect(url_for('view_favorites'))
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     with app.app_context():
-    app.run(debug=True)
+        db.create_all()
+    app.run(host='0.0.0.0', port=8080)
