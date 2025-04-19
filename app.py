@@ -2,10 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import requests
 
-from models import db, User, FavoriteRecipe
+from models import db, User, FavoriteRecipe  # Updated import
 
 import os
-basedir = os.path.abspath(os.path.dirname(_file_))
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask("RecipeFinder")
 app.config['SECRET_KEY'] = '12345'
@@ -105,7 +105,6 @@ def remove_favorite(recipe_id):
         db.session.delete(favorite)
         db.session.commit()
     return redirect(url_for('view_favorites'))
-
 
 if __name__ == '__main__':
     with app.app_context():
