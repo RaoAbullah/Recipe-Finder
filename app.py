@@ -5,7 +5,7 @@ import requests
 from models import db, User, FavoriteRecipe  # Updated import
 
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(_file_))
 
 app = Flask("RecipeFinder")
 app.config['SECRET_KEY'] = '12345'
@@ -106,7 +106,12 @@ def remove_favorite(recipe_id):
         db.session.commit()
     return redirect(url_for('view_favorites'))
 
+# ---------- NEW: Initialize DB Route ----------
+@app.route('/init-db')
+def init_db():
+    db.create_all()
+    return "Database tables created successfully!"
+
+# ---------- Deployment Entry ----------
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(host='0.0.0.0', port=8080)
