@@ -1,11 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import requests
-
 from models import db, User, FavoriteRecipe  # Updated import
-
 import os
-basedir = os.path.abspath(os.path.dirname(_file_))
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask("RecipeFinder")
 app.config['SECRET_KEY'] = '12345'
@@ -22,6 +21,12 @@ API_KEY = 'd010db4503814e108c4e9b93e3248b74'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+@app.before_first_request
+def create_tables():
+    # This ensures the tables are created before the first request is processed
+    with app.app_context():
+        db.create_all()
 
 @app.route('/')
 def index():
@@ -106,12 +111,5 @@ def remove_favorite(recipe_id):
         db.session.commit()
     return redirect(url_for('view_favorites'))
 
-# ---------- NEW: Initialize DB Route ----------
-@app.route('/init-db')
-def init_db():
-    db.create_all()
-    return "Database tables created successfully!"
-
-# ---------- Deployment Entry ----------
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
