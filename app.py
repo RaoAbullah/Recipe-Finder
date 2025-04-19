@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import requests
-from models import db, User, FavoriteRecipe
-import os
 
+# 1) IMPORT FROM model.py (not models.py)
+from model import db, User, FavoriteRecipe
+
+import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask("RecipeFinder")
@@ -11,7 +13,7 @@ app.config['SECRET_KEY'] = '12345'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize and immediately create tables
+# 2) Initialize DB and immediately create tables
 db.init_app(app)
 with app.app_context():
     db.create_all()
@@ -34,12 +36,11 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
+        if User.query.filter_by(username=username).first():
             flash('Username already exists.', 'danger')
             return redirect(url_for('register'))
-        new_user = User(username=username, password=password)
-        db.session.add(new_user)
+        user = User(username=username, password=password)
+        db.session.add(user)
         db.session.commit()
         flash('Registration successful. Please login.', 'success')
         return redirect(url_for('login'))
@@ -81,8 +82,8 @@ def suggest():
 @app.route('/favorites')
 @login_required
 def view_favorites():
-    favorites = FavoriteRecipe.query.filter_by(user_id=current_user.id).all()
-    return render_template('favorites.html', favorites=favorites)
+    favs = FavoriteRecipe.query.filter_by(user_id=current_user.id).all()
+    return render_template('favorites.html', favorites=favs)
 
 @app.route('/save_favorite/<int:recipe_id>')
 @login_required
