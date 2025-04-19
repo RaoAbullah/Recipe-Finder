@@ -1,23 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import requests
+import os
 
-# 1) IMPORT FROM model.py (not models.py)
+# 1) Import from your model file (ensure this matches your filename exactly)
 from models import db, User, FavoriteRecipe
 
-import os
+# 2) Initialize Flask
 basedir = os.path.abspath(os.path.dirname(__file__))
-
 app = Flask("RecipeFinder")
 app.config['SECRET_KEY'] = '12345'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# 2) Initialize DB and immediately create tables
+# 3) Initialize SQLAlchemy and immediately create all tables
 db.init_app(app)
 with app.app_context():
     db.create_all()
 
+# 4) Initialize Flask‑Login
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
@@ -26,6 +27,8 @@ API_KEY = 'd010db4503814e108c4e9b93e3248b74'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# --- Routes ---
 
 @app.route('/')
 def index():
@@ -82,8 +85,8 @@ def suggest():
 @app.route('/favorites')
 @login_required
 def view_favorites():
-    favs = FavoriteRecipe.query.filter_by(user_id=current_user.id).all()
-    return render_template('favorites.html', favorites=favs)
+    favorites = FavoriteRecipe.query.filter_by(user_id=current_user.id).all()
+    return render_template('favorites.html', favorites=favorites)
 
 @app.route('/save_favorite/<int:recipe_id>')
 @login_required
@@ -110,5 +113,6 @@ def remove_favorite(recipe_id):
         db.session.commit()
     return redirect(url_for('view_favorites'))
 
+# 5) Entry point for local development (Gunicorn will ignore this block)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
