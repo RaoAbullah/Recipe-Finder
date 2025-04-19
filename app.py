@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 import requests
 
 # 1) IMPORT FROM model.py (not models.py)
-from model import db, User, FavoriteRecipe
+from models import db, User, FavoriteRecipe
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
