@@ -106,11 +106,6 @@ def remove_favorite(recipe_id):
         db.session.commit()
     return redirect(url_for('view_favorites'))
 
-# Temporary route to initialize database on Railway
-@app.route('/initdb')
-def initdb():
-    db.create_all()
-    return 'Database initialized! You can now delete this route.'
 
 if __name__ == '__main__':
     with app.app_context():
