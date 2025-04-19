@@ -23,6 +23,11 @@ API_KEY = 'd010db4503814e108c4e9b93e3248b74'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.route('/initdb')
+def initdb():
+    db.create_all()
+    return 'Database initialized!'
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -108,5 +113,4 @@ def remove_favorite(recipe_id):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
     app.run(debug=True)
